@@ -1,7 +1,7 @@
 import {
   Client as DiscordClient,
   GatewayIntentBits,
-  Message,
+  Guild,
   TextChannel,
 } from "discord.js";
 
@@ -11,6 +11,8 @@ export class Client {
   private discordClient: DiscordClient<boolean>;
 
   private commands?: Commands;
+
+  private guild?: Guild;
 
   constructor(
     private readonly token: string,
@@ -34,6 +36,7 @@ export class Client {
       const channel = (await this.discordClient.channels.fetch(
         this.channelId,
       )) as TextChannel;
+      this.guild = await this.discordClient.guilds.fetch(this.guildId);
 
       this.commands = new Commands(channel);
     });
@@ -53,7 +56,7 @@ export class Client {
         return;
       }
 
-      const usernames = await this.getChannelUsernames(msg);
+      const usernames = await this.getChannelUsernames();
 
       switch (content) {
         case "!scrum":
@@ -66,12 +69,17 @@ export class Client {
     this.discordClient.login(this.token);
   }
 
-  private async getChannelUsernames(msg: Message): Promise<string[]> {
-    const members = await msg.guild?.members.list();
+  private async getChannelUsernames(): Promise<string[]> {
+    if (!this.guild) {
+      throw new Error("Guild is missing");
+    }
+
+    const members = await this.guild.members.fetch();
     const membersMap = new Map();
     members?.forEach((x) => {
       const { nickname, user } = x;
-      membersMap.set(user.username, nickname);
+      const name = nickname || user.username;
+      membersMap.set(user.username, name);
     });
 
     const { members: channelMembers } =
