@@ -29,5 +29,4 @@ FROM runtime-dependencies as runtime
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/dist .
 COPY --from=build /app/package.json .
-COPY --from=build /app/healthcheck_version ./
 USER node:node
