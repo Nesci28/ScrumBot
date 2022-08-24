@@ -12,7 +12,7 @@ COPY ./tsconfig.build.json ./
 COPY ./.npmrc ./
 COPY ./package.json ./
 COPY ./package-lock.json ./
-RUN npm ci --omit=dev
+RUN npm ci
 # Copy app sources
 COPY ./src ./src
 

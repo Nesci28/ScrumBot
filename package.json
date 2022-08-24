@@ -7,7 +7,7 @@
     "start": "ts-node src/index.ts",
     "start:dev": "nodemon src/index.ts",
     "start:prod": "node dist/index.js",
-    "build": "tsc",
+    "build": "tsc -p .",
     "lint": "prettier-eslint \"{src,apps,libs,test}/**/*.ts\" --write"
   },
   "author": "Mark Gagnon",
@@ -35,6 +35,7 @@
     "prettier": "^2.7.1",
     "prettier-eslint": "^15.0.1",
     "prettier-eslint-cli": "^7.0.1",
-    "ts-node": "^10.9.1"
+    "ts-node": "^10.9.1",
+    "typescript": "^4.7.4"
   }
 }
