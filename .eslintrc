@@ -1,0 +1,4 @@
+
+{
+    "extends": ["@okidoo/eslint-config"]
+}
