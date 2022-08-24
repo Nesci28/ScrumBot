@@ -1,6 +1,7 @@
 import {
   Client as DiscordClient,
   GatewayIntentBits,
+  Message,
   TextChannel,
 } from "discord.js";
 
@@ -33,9 +34,8 @@ export class Client {
       const channel = (await this.discordClient.channels.fetch(
         this.channelId,
       )) as TextChannel;
-      const guild = await this.discordClient.guilds.fetch(this.guildId);
 
-      this.commands = new Commands(channel, guild);
+      this.commands = new Commands(channel);
     });
 
     this.discordClient.on("messageCreate", async (msg) => {
@@ -53,14 +53,41 @@ export class Client {
         return;
       }
 
+      const usernames = await this.getChannelUsernames(msg);
+
       switch (content) {
         case "!scrum":
-          await this.commands.createScrumOrder();
+          await this.commands.createScrumOrder(usernames);
           break;
         default:
       }
     });
 
     this.discordClient.login(this.token);
+  }
+
+  private async getChannelUsernames(msg: Message): Promise<string[]> {
+    const members = await msg.guild?.members.list();
+    const membersMap = new Map();
+    members?.forEach((x) => {
+      const { nickname, user } = x;
+      membersMap.set(user.username, nickname);
+    });
+
+    const { members: channelMembers } =
+      (await this.discordClient.channels.fetch(this.channelId)) as TextChannel;
+    const usernames = channelMembers
+      .map((x) => {
+        const { user } = x;
+        const { bot, username } = user;
+        if (bot) {
+          return;
+        }
+
+        return membersMap.get(username);
+      })
+      .filter(Boolean) as string[];
+
+    return usernames;
   }
 }
