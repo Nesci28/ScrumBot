@@ -4,7 +4,7 @@ import {
   Guild,
   TextChannel,
 } from "discord.js";
-import cron from "node-cron";
+import * as cron from "node-cron";
 
 import { Commands } from "./commands";
 
