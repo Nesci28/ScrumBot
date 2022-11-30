@@ -4,6 +4,7 @@ import {
   Guild,
   TextChannel,
 } from "discord.js";
+import cron from "node-cron";
 
 import { Commands } from "./commands";
 
@@ -33,12 +34,18 @@ export class Client {
     this.discordClient.once("ready", async () => {
       // eslint-disable-next-line no-console
       console.log("Ready");
+
       const channel = (await this.discordClient.channels.fetch(
         this.channelId,
       )) as TextChannel;
       this.guild = await this.discordClient.guilds.fetch(this.guildId);
 
       this.commands = new Commands(channel);
+
+      cron.schedule("57 8 * * 1-5", async () => {
+        const usernames = await this.getChannelUsernames();
+        await this.commands?.createScrumOrder(usernames);
+      });
     });
 
     this.discordClient.on("messageCreate", async (msg) => {
