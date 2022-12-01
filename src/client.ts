@@ -42,10 +42,16 @@ export class Client {
 
       this.commands = new Commands(channel);
 
-      cron.schedule("57 8 * * 1-5", async () => {
-        const usernames = await this.getChannelUsernames();
-        await this.commands?.createScrumOrder(usernames);
-      });
+      cron.schedule(
+        "57 8 * * 1-5",
+        async () => {
+          const usernames = await this.getChannelUsernames();
+          await this.commands?.createScrumOrder(usernames);
+        },
+        {
+          timezone: "America/Toronto",
+        },
+      );
     });
 
     this.discordClient.on("messageCreate", async (msg) => {
